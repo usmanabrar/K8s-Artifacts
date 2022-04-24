@@ -1,0 +1,49 @@
+Is logging pod ko chalany k bad is k andar jana hy with below command
+
+#kubectl exec -it node-debug-pk5zj -n kube-system -- chroot /host
+
+#curl -Oeks-log-collector.sh https://raw.githubusercontent.com/awslabs/amazon-eks-ami/master/log-collector-script/linux/eks-log-collector.sh
+
+#kubectl cp -n kube-system node-debug-pk5zj:host/var/log/eks_i-00975c4ecc4bb1623_2022-03-22_2349-UTC_0.6.2.tar.gz eks_i-00975c4ecc4bb1623_2022-03-22_2349-UTC_0.6.2.tar.gz
+
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-debug
+  namespace: kube-system
+  labels:
+    k8s-app: node-debug
+spec:
+  selector:
+    matchLabels:
+      name: node-debug
+  template:
+    metadata:
+      labels:
+        name: node-debug
+    spec:
+      containers:
+      - name: ubuntu
+        image: ubuntu
+        resources:
+          limits:
+            cpu: 100m
+        volumeMounts:
+        - name: hostpath
+          mountPath: /host
+          readOnly: false
+        stdin: true
+        command:
+          - "/bin/bash"
+          - "-c"
+          - "while true; do sleep 3000; done;"
+        securityContext:
+          privileged: true
+      volumes:
+      - name: hostpath
+        hostPath:
+          path: /
+      hostNetwork: true
+      hostPID: true
+      restartPolicy: Always

@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+  name: my-app
+  namespace: my-namespace
+  labels:
+    app: myapp
+    type: front-end
+    env: production
+spec: 
+  containers:
+    - name: nginx-container
+      image: nginx
+      ports:
+        - containerPort: 80
+      resources:
+        requests:
+          memory: "1Gi"  or "800Mi"
+          cpu: 1  or "200m"     (is ka matlab hy 200 mili cores)
+        limits:
+          memory: "2Gi"
+          cpu: 2
+      env:
+        - name: POSTGRES_USER
+          value: "admin"
+        - name: POSTGRES_PASS
+          value: "password"
+      envfrom:
+        - secretRef:
+            name: myenvsec
+    - name: busybox
+      image: busybox
+      volumeMounts:
+      - mountPath: /opt		(Ye path container k andar jahan '/data' folder mount ho ga)
+	name: data-volume
+  nodeselector:
+    specification: "highserver"  (ye node ka lable hy basically key value pair ma)
+  volumes:
+  - name: data-volume
+    hostPath:
+	path: /data
+	type: Directory	
+  volumes:
+  - name: data-volume2
+    awsElasticBlockStore:
+	volumeID: <volume-id>
+	fsType: ext4

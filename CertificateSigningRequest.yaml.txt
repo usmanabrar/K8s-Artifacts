@@ -1,0 +1,12 @@
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: usmanCSR
+spec:
+  groups:
+  - developers
+  request:
+    yaha pay wo CSR key paste krni hy jo is command se milay gi #cat usman.csr | base64 | tr -d “\n” 
+  signerName: kubernetes.io/kube-apiserver-client
+usages:
+  - client auth 

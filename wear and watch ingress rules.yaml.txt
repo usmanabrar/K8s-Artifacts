@@ -1,0 +1,55 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+	name: ingress-wear-watch
+	namespace: <namespace-name>
+	annotations:
+	  kubernetes.io/ingress.class: nginx
+spec:
+	rules:
+	- host: google.com
+	  http:
+	     paths:
+	     - path: /analytics
+	       backend:
+		serviceName: wear-service
+		servicePort: 80
+
+	     - path: /watch
+	       backend:
+		serviceName: watch-service
+		servicePort: 80
+
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+	name: ingress-wear-watch
+spec:
+	rules:
+	- host: wear.my-online-store.com 
+	  http:
+	     paths:
+	     - backend:
+		serviceName: wear-service
+		servicePort: 80
+	- host: watch.my-online-store.com
+	  http:
+	     paths:
+	     - backend:
+		serviceName: watch-service
+		servicePort: 80
+
+
+
+aljVersion: v1
+kind: Service
+metadata:
+	name: wear-service
+spec:
+	selector:
+	   app: myapp
+	ports:
+	   - protocol: TCP
+	     port: 80
+	     targetPort: 80

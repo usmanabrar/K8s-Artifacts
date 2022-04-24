@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: service
+metadata:
+  name: myapp-service
+
+spec:
+  type: NodePort
+  ports:
+    - targetPort: 80     (this is the port on which pod/container is listening)
+      port: 80		(This port is on Service object, service has its IP as well from cluster)
+      nodePort: 30008
+
+  selector:
+      app: myapp         (Ye pod ka lable ho ga, jitny b pod is lable k name se hon gy kisi b pod py 			 chali jae gi request, yani ye service un sb PODs ki hy jin ko lable myapp 			 dia hua hy)
+      type: front-end
