@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: private-repository-k8s
+  namespace: cka-training
+  labels:
+    app: private-repository-k8s
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: private-repository-k8s
+  template:
+    metadata:
+      labels:
+        app: private-repository-k8s
+    spec:
+      volumes:
+      - name: registry-vol
+        persistentVolumeClaim:
+          claimName: docker-repo-pvc
+      - name: certs-vol
+        secret:
+          secretName: docker-registry-secret 
+      - name: auth-vol
+        secret:        
+          secretName: auth-secret 
+      containers:
+        - image: registry:2
+          name: private-repository-k8s
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: REGISTRY_HTTP_TLS_CERTIFICATE
+            value: "/certs/tls.crt"
+          - name: REGISTRY_HTTP_TLS_KEY
+            value: "/certs/tls.key"
+          - name: REGISTRY_AUTH
+            value: "htpasswd"
+          - name: REGISTRY_AUTH_HTPASSWD_REALM
+            value: "Registry Realm"
+          - name: REGISTRY_AUTH_HTPASSWD_PATH
+            value: "/auth/htpasswd"   
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+          - name: certs-vol
+            mountPath: /certs
+          - name: registry-vol
+            mountPath: /var/lib/registry
+          - name: auth-vol
+            mountPath: /auth
